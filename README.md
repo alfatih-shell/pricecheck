@@ -19,7 +19,7 @@ Follow these steps to utilize this package:
 
 ## Example
 ```python
-from price_check import PriceChecker
+from pricecheck import PriceChecker
 
 # Initialize PriceChecker
 price_checker = PriceChecker()
@@ -27,14 +27,6 @@ price_checker = PriceChecker()
 # Run main program
 price_checker.run()
 
-# Input Opsgenie API key
-opsgenie_api_key = input("Enter your Opsgenie API key: ")
-
-# Input birdeye.so API key
-birdeye_api_key = input("Enter your birdeye.so API key: ")
-
-# Use the API keys
-# (Insert code to utilize the API keys as needed)
 ```
 
 ## License

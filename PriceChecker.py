@@ -3,6 +3,7 @@ import sys
 import time
 import requests
 from dmacheck import opsgenie_utils
+from alertg import check_gas_price
 
 
 def get_token_price(token_address, chain_name, api_key):
@@ -45,7 +46,6 @@ def alert_to_opsgenie(token_address, token_price):
     # Call the function from opsgenie_utils to create the alert
     opsgenie_utils.create_alert(alert_payload)
     print("Alert created in Opsgenie.")
-    return True
 
 
 if __name__ == "__main__":
@@ -55,6 +55,11 @@ if __name__ == "__main__":
     parser.add_argument("--token_address", required=True, help="Token address")
     parser.add_argument("--chain_name", required=True, help="Chain name")
     parser.add_argument("--api_key", required=True, help="API key from birdeye.so")
+    parser.add_argument(
+        "--etherscan_api_key",
+        required=True,
+        help="Etherscan API key for gas price checking",
+    )  # Add Etherscan API key for gas price check
     parser.add_argument(
         "--threshold", type=float, required=True, help="Price threshold"
     )
@@ -67,11 +72,14 @@ if __name__ == "__main__":
 
     while True:
         token_price = get_token_price(args.token_address, args.chain_name, args.api_key)
-        if token_price is not None:
-            if token_price >= args.threshold:
-                alert_to_opsgenie(args.token_address, token_price)
-            # Sleep for 10 seconds before fetching again
-            time.sleep(10)
-        else:
-            # If price fetching failed, wait for 10 seconds before retrying
-            time.sleep(10)
+        if token_price is not None and token_price >= args.threshold:
+            alert_to_opsgenie(args.token_address, token_price)
+
+            current_gas_price = check_gas_price(args.etherscan_api_key)
+            if current_gas_price:
+                print(
+                    f"Gas price is below the threshold. Current safe gas price: {current_gas_price}"
+                )
+            else:
+                print("Gas price is above the threshold or couldn't be fetched.")
+        time.sleep(10)  # Sleep for 10 seconds before checking again

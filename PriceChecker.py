@@ -3,7 +3,7 @@ import sys
 import time
 import requests
 from dmacheck import opsgenie_utils
-from alertg import check_gas_price
+from alertg.app import check_gas_price
 
 
 def get_token_price(token_address, chain_name, api_key):
